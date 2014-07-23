@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>IMG_0997.JPG</file>
+        <file>DRL_IKO.png</file>
+        <file>texture_pixel_dresscode.jpg</file>
+    </qresource>
+</RCC>
