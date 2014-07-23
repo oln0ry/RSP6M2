@@ -10,6 +10,15 @@ Indicator::Indicator(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
     position=QPoint(0u,0u);
     Painter=new QPainter;
     GenerationRadians();
+Polar p;
+    for(Polar*i=radians,*end=radians+ROUND_DEGREE;i<end;i+=3) //Получаем координаты для отрисовки фона индикатора
+    {
+        p.x=i->x;
+        p.y=i->y;
+        p.angle=i->angle;
+        circle.append(p);
+    }
+
     GenerationRayPath();
 }
 
@@ -42,30 +51,45 @@ void Indicator::resizeGL(int w,int h)
     height=h;
     bg=background.scaled(width,height,Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     glEnable(GL_MULTISAMPLE);
-    if(width>height)
-        glViewport(static_cast<GLint>(0u),static_cast<GLint>(0u),static_cast<GLint>(height),static_cast<GLint>(height));
-    else
-        glViewport(static_cast<GLint>(100u),static_cast<GLint>(100u),static_cast<GLint>(150),static_cast<GLint>(150));
-
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(.0f,.0f,.0f,1.0,1.0,-1.0f);
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    //glLoadIdentity();
 }
 
 void Indicator::paintGL()
 {
     glLoadIdentity(); // загружаем матрицу
     glPushMatrix();
-    glTranslatef(.0f,0.12f,.0f);
+    //glTranslatef(.0f,0.12f,.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // чистим буфер изображения и буфер глубины
     terrain=bindTexture(bg);
     Painter->begin(this);
     drawTexture(position,terrain);
     Painter->end();
-    DrawRay();
+    /*
+    if(width>height)
+        glViewport(static_cast<GLint>(0u),static_cast<GLint>(0u),static_cast<GLint>(height),static_cast<GLint>(height));
+    else
+        glViewport(static_cast<GLint>(0u),static_cast<GLint>(0u),static_cast<GLint>(width),static_cast<GLint>(width));
+*/
+    glViewport(static_cast<GLint>(0),static_cast<GLint>(height/4),static_cast<GLint>(width),static_cast<GLint>(3*height/4));
+    glScalef(.85f,.85f,1.0f);
+    glTranslatef(-.01f,-.04f,.0f);
 
+    glTranslatef(.02f,-.14f,.0f);
+    /*
+    qglColor(Qt::black);
+    glLineWidth(2.0f);
+    glBegin(GL_TRIANGLE_FAN);
+        for(QVector<Polar>::const_iterator it=circle.begin();it<circle.end();it++)
+            glVertex2d(it->x,it->y);
+    glEnd();
+*/
+    glRotatef(90.0f,.0f,.0f,1.0f);
+    DrawRay();
+    glPopMatrix();
 }
 
 void Indicator::timerEvent(QTimerEvent*E)
@@ -107,11 +131,24 @@ void Indicator::ContinueSearch(void)
 
 void Indicator::GenerationRadians(void)
 {
+    /*
     for(quint16 i=0u;i<ROUND_DEGREE;i++)
     {
         radians[i].angle=GetRadianValue(i);
         radians[i].x=qFastCos(radians[i].angle);
         radians[i].y=qFastSin(radians[i].angle);
+    }
+    */
+    for(quint16 i=0u;i<ROUND_DEGREE;i++)
+    {
+        radians[i].angle=GetRadianValue(i);
+        radians[i].x=qFastCos(radians[i].angle);
+        radians[i].y=qFastSin(radians[i].angle);
+/*
+        if(radians[i].x>0)
+            radians[i].x*=1.14;
+        else
+            radians[i].x*=0.8;*/
     }
 }
 
@@ -129,8 +166,13 @@ void Indicator::DrawRay()const
     //QColor color=Color;
     //color.setAlphaF(settings["system"]["brightness"].toDouble());
     //qglColor(color);
+
     qglColor(ray_color);
     glLineWidth(3.0f);
+    if((*ray_position)->x>0)
+        glScalef(1.13f,1.0f,1.0f);
+    else
+        glScalef(0.85f,0.99f,1.0f);
     glBegin(GL_LINES);
         glVertex2d(static_cast<GLdouble>(.0f),static_cast<GLdouble>(.0f));
         glVertex2d((*ray_position)->x,(*ray_position)->y);

@@ -54,6 +54,7 @@ class Indicator : public QGLWidget
         void GenerationRayPath();
         void DrawRay()const;
         Polar radians[ROUND_DEGREE];
+        QVector<Polar>circle;
         QVector<Polar*>ray;
         QVector<Polar*>::const_iterator ray_position;
         QBasicTimer timer;
