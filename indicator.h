@@ -1,10 +1,6 @@
 #ifndef INDICATOR_H
 #define INDICATOR_H
 
-#ifndef GL_MULTISAMPLE
-#define GL_MULTISAMPLE  0x809D
-#endif
-
 #include<QTime>
 #include<QGLWidget>
 #include<QResizeEvent>
@@ -20,11 +16,9 @@
 #define ROUND_DEGREE 360u
 #endif
 
-
-struct Polar
-{
-    qreal x,y,angle;
-};
+#ifndef GL_MULTISAMPLE
+#define GL_MULTISAMPLE  0x809D
+#endif
 
 class Indicator : public QGLWidget
 {
@@ -33,36 +27,87 @@ class Indicator : public QGLWidget
         explicit Indicator(QWidget *parent=0);
         ~Indicator();
         bool IsActive(void)const;
+        bool IsAllVisible(void)const;
+        void SetAllVisible(bool);
         void ChangeFPS(qreal fps);
+        struct Points
+        {
+            qreal x,y,angle;
+        }*radians;
 
-    signals:
+        struct PointsR : public Points
+        {
+            qreal r;
+        };
+        struct RoundLine
+        {
+            qreal width;
+            Points *Coordinates=nullptr;
+        };
 
-    public slots:
+        struct RoundLineR
+        {
+            qreal width;
+            PointsR *Coordinates=nullptr;
+        };
+
+        struct CenterStraightLine
+        {
+            qreal width;
+            Points Coordinates;
+        };
+
+        struct TargetsStorage
+        {
+            qreal angle;
+            qreal range;
+        };
 
     protected:
+        struct Storage
+        {
+            QHash<quint16,QVector<PointsR> >trash,local_items;
+            QHash<quint8,QHash<quint16,QVector<PointsR> > >meteo;
+            QHash<quint16,QVector<RoundLine> >range;
+            QHash<quint16,QVector<RoundLineR> >active_answer_trash;
+            QHash<quint16,QHash<quint8,QVector<RoundLineR> > >active_insync_trash,targets;
+            QVector<CenterStraightLine>azimuth;
+            QVector<RoundLine>active_noise_trash;
+        }S;
+
+        struct Pointer
+        {
+            QVector<RoundLine>*range=nullptr;
+            QVector<CenterStraightLine>*azimuth=nullptr;
+        }Cache,Current;
+
         void timerEvent(QTimerEvent*);
         void initializeGL();
         void resizeGL(int width,int height);
         void paintGL();
-        int heightForWidth(int)const;
-        virtual void ContinueSearch(void);
+
+        virtual qreal CalcAlpha(qreal angle)const=0;
+        virtual void GenerationRange(void)=0;
+        virtual void DrawRange(void)const=0;
+        virtual void ContinueSearch(void)=0;
+
+        void GenerationRadians(void);
+        void GenerationRayPath(void);
+        void GenerationRayPath(quint16 angle);
+        void DrawRay(void)const;
+
         QImage background,bg;
         QPainter *Painter;
         GLuint terrain;
         QPoint position;
-        void GenerationRadians();
-        void GenerationRayPath();
-        void DrawRay()const;
-        Polar radians[ROUND_DEGREE];
-        QVector<Polar>circle;
-        QVector<Polar*>ray;
-        QVector<Polar*>::const_iterator ray_position;
-        QBasicTimer timer;
         QColor ray_color;
+        bool show=false;
+        QVector<Points*>::const_iterator ray_position;
+        QBasicTimer timer;
+        QVector<Points>circle;
+        QVector<Points*>ray;
+        int width,height;
 
-    private:
-        int width,
-            height;
 };
 
 #endif // INDICATOR_H

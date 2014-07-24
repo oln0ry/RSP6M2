@@ -28,9 +28,3 @@ void DRLView::resizeEvent(QResizeEvent*E)
         ui->RenderIKO->setGeometry(0u,0u,w,h);
     QWidget::resizeEvent(E);
 }
-
-int DRLView::heightForWidth(int w)const
-{
-    qDebug()<<2;
-    return w;
-}

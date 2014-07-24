@@ -36,7 +36,7 @@
        <number>0</number>
       </property>
       <item row="0" column="0">
-       <widget class="Indicator" name="RenderIKO" native="true">
+       <widget class="DRL" name="RenderIKO" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -52,9 +52,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Indicator</class>
+   <class>DRL</class>
    <extends>QWidget</extends>
-   <header>indicator.h</header>
+   <header>drl.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

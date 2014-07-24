@@ -5,13 +5,12 @@ Indicator::Indicator(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
 {
     qsrand(QTime(0u,0u,0u).secsTo(QTime::currentTime()));
     ray_color=QColor(120u,183u,255u);
-    background.load(":/images/DRL_IKO.png");
-    //background=QGLWidget::convertToGLFormat(background);
+
     position=QPoint(0u,0u);
     Painter=new QPainter;
     GenerationRadians();
-Polar p;
-    for(Polar*i=radians,*end=radians+ROUND_DEGREE;i<end;i+=3) //Получаем координаты для отрисовки фона индикатора
+    Points p;
+    for(Points*i=radians,*end=radians+ROUND_DEGREE;i<end;i+=3) //Получаем координаты для отрисовки фона индикатора
     {
         p.x=i->x;
         p.y=i->y;
@@ -25,11 +24,6 @@ Polar p;
 Indicator::~Indicator()
 {
 
-}
-
-int Indicator::heightForWidth(int)const
-{
-    return width;
 }
 
 void Indicator::initializeGL()
@@ -83,12 +77,13 @@ void Indicator::paintGL()
     qglColor(Qt::black);
     glLineWidth(2.0f);
     glBegin(GL_TRIANGLE_FAN);
-        for(QVector<Polar>::const_iterator it=circle.begin();it<circle.end();it++)
+        for(QVector<Points>::const_iterator it=circle.begin();it<circle.end();it++)
             glVertex2d(it->x,it->y);
     glEnd();
 */
     glRotatef(90.0f,.0f,.0f,1.0f);
     DrawRay();
+    DrawRange();
     glPopMatrix();
 }
 
@@ -104,6 +99,11 @@ bool Indicator::IsActive(void)const
     return timer.isActive();
 }
 
+bool Indicator::IsAllVisible(void)const
+{
+    return show;
+}
+
 void Indicator::ChangeFPS(qreal fps)
 {
     if(fps<=.0f && IsActive())
@@ -116,52 +116,32 @@ void Indicator::ChangeFPS(qreal fps)
     }
 }
 
-/**
- * Обновление остаточного изображения
- */
-void Indicator::ContinueSearch(void)
-{
-    updateGL();
-    if(ray_position==ray.end()-1u)
-    {
-        ray_position=ray.begin();
-    }
-    ray_position++;
-}
-
 void Indicator::GenerationRadians(void)
 {
-    /*
+    radians=new Points[ROUND_DEGREE];
     for(quint16 i=0u;i<ROUND_DEGREE;i++)
     {
         radians[i].angle=GetRadianValue(i);
         radians[i].x=qFastCos(radians[i].angle);
         radians[i].y=qFastSin(radians[i].angle);
-    }
-    */
-    for(quint16 i=0u;i<ROUND_DEGREE;i++)
-    {
-        radians[i].angle=GetRadianValue(i);
-        radians[i].x=qFastCos(radians[i].angle);
-        radians[i].y=qFastSin(radians[i].angle);
-/*
-        if(radians[i].x>0)
-            radians[i].x*=1.14;
-        else
-            radians[i].x*=0.8;*/
     }
 }
 
-void Indicator::GenerationRayPath()
+void Indicator::GenerationRayPath(void)
+{
+    GenerationRayPath(ROUND_DEGREE);
+}
+
+void Indicator::GenerationRayPath(quint16 angle)
 {
     ray.clear();
-    Polar*i=radians,*end=radians+ROUND_DEGREE;
+    Points*i=radians,*end=radians+angle;
     //while(i<end)ray.append(clockwise ? end-- : i++);
     while(i<end)ray.prepend(i++);
     ray_position=ray.begin(); //Устанавливаем стартовую позицию луча
 }
 
-void Indicator::DrawRay()const
+void Indicator::DrawRay(void)const
 {
     //QColor color=Color;
     //color.setAlphaF(settings["system"]["brightness"].toDouble());

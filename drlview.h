@@ -18,7 +18,6 @@ class DRLView : public QMainWindow
 
     protected:
         void resizeEvent(QResizeEvent* event);
-        int heightForWidth(int w)const;
 
     private:
         Ui::DRLView *ui;
