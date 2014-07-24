@@ -29,6 +29,7 @@ Indicator::~Indicator()
 void Indicator::initializeGL()
 {
     glMatrixMode(GL_PROJECTION); //Устанавливаем матрицу
+    glShadeModel(GL_SMOOTH);//GL_FLAT
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_COLOR_MATERIAL);
@@ -122,6 +123,7 @@ void Indicator::GenerationRadians(void)
     radians=new Points[ROUND_DEGREE];
     for(quint16 i=0u;i<ROUND_DEGREE;i++)
     {
+        radians[i].degree=i;
         radians[i].angle=GetRadianValue(i);
         radians[i].x=qFastCos(radians[i].angle);
         radians[i].y=qFastSin(radians[i].angle);
@@ -149,13 +151,24 @@ void Indicator::DrawRay(void)const
     //qglColor(color);
 
     qglColor(ray_color);
-    glLineWidth(3.0f);
+    glPointSize(4.0f);
+    glLineWidth(0.3f);
     if((*ray_position)->x>0)
         glScalef(1.13f,1.0f,1.0f);
     else
-        glScalef(0.85f,0.99f,1.0f);
+        glScalef(.85f,.99f,1.0f);
+
     glBegin(GL_LINES);
         glVertex2d(static_cast<GLdouble>(.0f),static_cast<GLdouble>(.0f));
         glVertex2d((*ray_position)->x,(*ray_position)->y);
     glEnd();
+
+    for(QVector<RoundLine>::const_iterator it=(*Current.range).begin(),end=(*Current.range).end();it<end;it++)
+    {
+        glBegin(GL_POINTS);
+        //glLineWidth(it->width/**focus*/);
+        Points *i=it->Coordinates+(*ray_position)->degree;
+        glVertex2f(i->x,i->y);
+        glEnd();
+    }
 }

@@ -33,6 +33,7 @@ class Indicator : public QGLWidget
         struct Points
         {
             qreal x,y,angle;
+            quint16 degree;
         }*radians;
 
         struct PointsR : public Points

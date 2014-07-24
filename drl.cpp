@@ -135,6 +135,9 @@ void DRL::DrawRange(void)const
                 if(alpha>.0f)
                 {
                     //alpha=alpha<settings["system"]["lightning"].toDouble() ? 1.0f : settings["system"]["lightning"].toDouble()/alpha;
+                    alpha=0.1/alpha;
+                    if(alpha>1.0f)
+                        alpha=1.0f;
                     color.setAlphaF(alpha/**brightness*/);
                     qglColor(color);
                     glVertex2f(i->x,i->y);
@@ -194,10 +197,13 @@ void DRL::DrawAzimuth(void)const
         if(alpha>.0f)
         {
             //alpha=alpha<settings["system"]["lightning"].toDouble() ? 1.0f : settings["system"]["lightning"].toDouble()/alpha;
+            alpha=0.1/alpha;
+            if(alpha>1.0f)
+                alpha=1.0f;
+            color.setAlphaF(/*brightness**/alpha);
+            qglColor(color);
             glLineWidth(it->width/**focus*/);
             glBegin(GL_LINES);
-                color.setAlphaF(/*brightness**/alpha);
-                qglColor(color);
                 glVertex2f(.0f,.0f);
                 glVertex2f(it->Coordinates.x,it->Coordinates.y);
             glEnd();
@@ -221,7 +227,7 @@ qreal DRL::CalcAlpha(qreal angle)const
         alpha=1.0f;
     else
     {
-        alpha=angle-(*ray_position)->angle;
+        alpha=-1*((*ray_position)->angle-angle);
         if(alpha<.0f)
             alpha+=2u*M_PI;
     }
