@@ -30,6 +30,8 @@ class DRL : public Indicator
         void ContinueSearch(void);
         void GenerationRange(void);
         void DrawRange(void)const;
+        void GenerationAzimuth(void);
+        void DrawAzimuth(void)const;
 
         Azimuth azimuth=Azimuth::A_NO;
         Range range=Range::R_NO;

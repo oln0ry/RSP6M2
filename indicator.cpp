@@ -84,6 +84,7 @@ void Indicator::paintGL()
     glRotatef(90.0f,.0f,.0f,1.0f);
     DrawRay();
     DrawRange();
+    DrawAzimuth();
     glPopMatrix();
 }
 

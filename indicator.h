@@ -89,6 +89,8 @@ class Indicator : public QGLWidget
         virtual qreal CalcAlpha(qreal angle)const=0;
         virtual void GenerationRange(void)=0;
         virtual void DrawRange(void)const=0;
+        virtual void GenerationAzimuth(void)=0;
+        virtual void DrawAzimuth(void)const=0;
         virtual void ContinueSearch(void)=0;
 
         void GenerationRadians(void);

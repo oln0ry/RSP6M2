@@ -5,8 +5,10 @@ DRL::DRL(QWidget *parent) : Indicator(parent)
 {
     background.load(":/images/DRL_IKO.png");
     S.range.clear();
+    S.azimuth.clear();
     SetCurrentRangeMode(Range::R_FIRST);
     SetCurrentScaleMode(Scale::S_SMALL);
+    SetCurrentAzimuthMode(Azimuth::A_FIRST);
 }
 
 DRL::~DRL()
@@ -38,7 +40,7 @@ DRL::Azimuth DRL::GetCurrentAzimuthMode(void)const
 void DRL::SetCurrentAzimuthMode(const DRL::Azimuth a)
 {
     azimuth=a;
-    //GenerationAzimuth();
+    GenerationAzimuth();
 }
 
 /**
@@ -150,6 +152,66 @@ void DRL::DrawRange(void)const
         glEnd();
     }
     */
+}
+
+/**
+ * Генерация координат отметок азимута
+ */
+void DRL::GenerationAzimuth(void)
+{
+    S.azimuth.clear();
+    if(azimuth==Azimuth::A_NO)
+        return;
+
+    CenterStraightLine cache;
+    for(Points *i=radians,*e=radians+ROUND_DEGREE;i<e;i+=azimuth)
+    {
+        cache.width=(i-radians)%A_SECOND>0u ? 1.0f : 3.5f;
+        cache.Coordinates.angle=i->angle;
+        cache.Coordinates.x=i->x;
+        cache.Coordinates.y=i->y;
+        S.azimuth.append(cache);
+    }
+    Current.azimuth=&S.azimuth;
+}
+
+/**
+ * Отрисовка координат отметок азимута
+ */
+void DRL::DrawAzimuth(void)const
+{
+    if(Current.azimuth->isEmpty())
+        return;
+    qreal alpha;
+          /*focus=settings["system"]["focus"].toDouble(),
+          brightness=settings["brightness"]["azimuth"].isValid() ? settings["brightness"]["azimuth"].toDouble() : 1.0f;
+    brightness*=settings["system"]["brightness"].toDouble();
+    */
+        QColor color=ray_color;
+    for(QVector<CenterStraightLine>::const_iterator it=Current.azimuth->begin(),end=Current.azimuth->end();it<end;it++)
+    {
+        alpha=CalcAlpha(it->Coordinates.angle);
+        if(alpha>.0f)
+        {
+            //alpha=alpha<settings["system"]["lightning"].toDouble() ? 1.0f : settings["system"]["lightning"].toDouble()/alpha;
+            glLineWidth(it->width/**focus*/);
+            glBegin(GL_LINES);
+                color.setAlphaF(/*brightness**/alpha);
+                qglColor(color);
+                glVertex2f(.0f,.0f);
+                glVertex2f(it->Coordinates.x,it->Coordinates.y);
+            glEnd();
+        }
+    }
+    /*
+    for(QVector<CenterStraightLine>::const_iterator it=Cache.azimuth.begin(),end=Cache.azimuth.end();it<end;it++)
+    {
+        glLineWidth(it->width);
+        glBegin(GL_LINES);
+            glVertex2f(.0f,.0f);
+            glVertex2f(it->Coordinates.x,it->Coordinates.y);
+        glEnd();
+    }*/
 }
 
 qreal DRL::CalcAlpha(qreal angle)const
