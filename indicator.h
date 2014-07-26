@@ -100,9 +100,7 @@ class Indicator : public QGLWidget
         void DrawRay(void)const;
 
         QImage background,bg;
-        QPainter *Painter;
-        GLuint terrain;
-        QPoint position;
+        GLuint terrain[1];
         QColor ray_color;
         bool show=false;
         QVector<Points*>::const_iterator ray_position;

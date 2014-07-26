@@ -3,7 +3,8 @@
 
 DRL::DRL(QWidget *parent) : Indicator(parent)
 {
-    background.load(":/images/DRL_IKO.png");
+    background.load(":/images/DRL_IKO.png","PNG");
+    background=QGLWidget::convertToGLFormat(background);
     S.range.clear();
     S.azimuth.clear();
     SetCurrentRangeMode(Range::R_FIRST);

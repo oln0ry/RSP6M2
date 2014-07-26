@@ -4,10 +4,8 @@
 Indicator::Indicator(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),parent)
 {
     qsrand(QTime(0u,0u,0u).secsTo(QTime::currentTime()));
-    ray_color=QColor(120u,183u,255u);
-
-    position=QPoint(0u,0u);
-    Painter=new QPainter;
+    //ray_color=QColor(120u,183u,255u);
+    ray_color=QColor(55u,80u,100u);
     GenerationRadians();
     Points p;
     for(Points*i=radians,*end=radians+ROUND_DEGREE;i<end;i+=3) //Получаем координаты для отрисовки фона индикатора
@@ -23,7 +21,7 @@ Indicator::Indicator(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
 
 Indicator::~Indicator()
 {
-
+    glDeleteTextures(1,terrain);
 }
 
 void Indicator::initializeGL()
@@ -38,6 +36,7 @@ void Indicator::initializeGL()
     glEnable(GL_POINT_SMOOTH);
     glHint(GL_POINT_SMOOTH_HINT,GL_NICEST);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glGenTextures(1,terrain);
 }
 
 void Indicator::resizeGL(int w,int h)
@@ -48,7 +47,7 @@ void Indicator::resizeGL(int w,int h)
     glEnable(GL_MULTISAMPLE);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(.0f,.0f,.0f,1.0,1.0,-1.0f);
+    glOrtho(.0f,.0f,.0f,1.0f,1.0f,-1.0f);
     glMatrixMode(GL_MODELVIEW);
     //glLoadIdentity();
 }
@@ -59,10 +58,43 @@ void Indicator::paintGL()
     glPushMatrix();
     //glTranslatef(.0f,0.12f,.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // чистим буфер изображения и буфер глубины
-    terrain=bindTexture(bg);
-    Painter->begin(this);
-    drawTexture(position,terrain);
-    Painter->end();
+    glEnable(GL_TEXTURE_2D);
+    glAlphaFunc(GL_GREATER,0.1f);
+    glEnable(GL_ALPHA_TEST);
+    glBindTexture(GL_TEXTURE_2D,terrain[0]);
+    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,bg.width(),bg.height(),0,GL_RGBA,GL_UNSIGNED_BYTE,bg.bits());
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR );
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR );
+
+    glColor3d(1u,1u,1u);
+    glViewport(0u,0u,width,height);
+    glBegin(GL_QUADS);
+
+    //Bottom Left
+    glTexCoord2f(.0f,.0f);
+    glVertex2f(-1.0f,-1.0f);
+
+    //Top Left
+    //glColor3f(0.2,0.7,0);
+    glTexCoord2f(.0f,1.0f);
+    glVertex2f(-1.0f,1.0f);
+
+    //Top Right
+    //glColor3f(0.9,0.1,0.5);
+    glTexCoord2f(1.0f,1.0f);
+    glVertex2f(1.0f,1.0f);
+
+    //Bottom Right
+    //glColor3f(0.6,0.6,0.6);
+    glTexCoord2f(1.0f,.0f);
+    glVertex2f(1.0f,-1.0f);
+
+    glEnd();
+    glDisable(GL_ALPHA_TEST);
+    glDisable(GL_TEXTURE_2D);
+
+
+
     /*
     if(width>height)
         glViewport(static_cast<GLint>(0u),static_cast<GLint>(0u),static_cast<GLint>(height),static_cast<GLint>(height));
