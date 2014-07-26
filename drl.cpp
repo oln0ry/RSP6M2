@@ -1,9 +1,23 @@
 #include"drl.h"
+#include<QMessageBox>
 #include<QDebug>
 
 DRL::DRL(QWidget *parent) : Indicator(parent)
 {
-    background.load(":/images/DRL_IKO.png","PNG");
+    try{
+        if(!background.load(":/images/DRL_IKO.png","PNG"))
+            throw Errors::TEXTURE_UNLOAD;
+    }
+    catch(Errors E)
+    {
+        QMessageBox box;
+        box.setWindowTitle("Ошибка загрузки ресурсов");
+        box.setText("Невозможно загрузить изображение индикатора ДРЛ");
+        box.setInformativeText(QString("Код ошибки: %1").arg(E));
+        box.setIcon(QMessageBox::Critical);
+        box.setDefaultButton(QMessageBox::Ok);
+        box.exec();
+    }
     background=QGLWidget::convertToGLFormat(background);
     S.range.clear();
     S.azimuth.clear();
@@ -170,7 +184,7 @@ void DRL::GenerationAzimuth(void)
     CenterStraightLine cache;
     for(Points *i=radians,*e=radians+ROUND_DEGREE;i<e;i+=azimuth)
     {
-        cache.width=(i-radians)%A_SECOND>0u ? 1.0f : 3.5f;
+        cache.width=(i-radians)%A_SECOND>0u ? 1.0f : 2.0f; //3.5f;
         cache.Coordinates.angle=i->angle;
         cache.Coordinates.x=i->x;
         cache.Coordinates.y=i->y;

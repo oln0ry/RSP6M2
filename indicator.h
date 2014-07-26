@@ -64,6 +64,8 @@ class Indicator : public QGLWidget
             qreal range;
         };
 
+        enum Errors{TEXTURE_UNLOAD=0u};
+
     protected:
         struct Storage
         {
