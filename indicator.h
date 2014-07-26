@@ -30,11 +30,16 @@ class Indicator : public QGLWidget
         bool IsAllVisible(void)const;
         void SetAllVisible(bool);
         void ChangeFPS(qreal fps);
-        struct Points
+        struct Y
         {
-            qreal x,y,angle;
+            qreal y;
+        };
+
+        struct Points : public Y
+        {
+            qreal x,angle;
             quint16 degree;
-        }*radians;
+        };
 
         struct PointsR : public Points
         {
