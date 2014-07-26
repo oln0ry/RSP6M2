@@ -103,11 +103,9 @@ class Indicator : public QGLWidget
         GLuint terrain[1];
         QColor ray_color;
         bool show=false;
-        QVector<Points*>::const_iterator ray_position;
         QBasicTimer timer;
-        QVector<Points>circle;
-        QVector<Points*>ray;
         int width,height;
+        //QVector<Points>circle;
 
 };
 

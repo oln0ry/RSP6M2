@@ -40,6 +40,9 @@ class PRL : public Indicator
         template<typename T>T CalcScaleValue(const T value,Scale scale)const;
         template<typename T>T CalcScaleValue(const T value)const;
 
+        QVector<Points*>::const_iterator ray_position;
+        QVector<Points*>ray;
+
 };
 
 #endif // PRL_H

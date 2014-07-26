@@ -42,6 +42,10 @@ class DRL : public Indicator
         Scale scale=Scale::S_SMALL;
         template<typename T>T CalcScaleValue(const T value,Scale scale)const;
         template<typename T>T CalcScaleValue(const T value)const;
+
+        QVector<Points*>::const_iterator ray_position;
+        QVector<Points*>ray;
+
 };
 
 #endif // DRL_H
