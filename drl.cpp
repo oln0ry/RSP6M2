@@ -1,23 +1,11 @@
 #include"drl.h"
-#include<QMessageBox>
 #include<QDebug>
 
 DRL::DRL(QWidget *parent) : Indicator(parent)
 {
-    try{
-        if(!background.load(":/images/DRL_IKO.png","PNG"))
-            throw Errors::TEXTURE_UNLOAD;
-    }
-    catch(Errors E)
-    {
-        QMessageBox box;
-        box.setWindowTitle("Ошибка загрузки ресурсов");
-        box.setText("Невозможно загрузить изображение индикатора ДРЛ");
-        box.setInformativeText(QString("Код ошибки: %1").arg(E));
-        box.setIcon(QMessageBox::Critical);
-        box.setDefaultButton(QMessageBox::Ok);
-        box.exec();
-    }
+    GenerationRadians();
+    GenerationRayPath();
+    background.load(":/images/DRL_IKO.png","PNG");
     background=QGLWidget::convertToGLFormat(background);
     S.range.clear();
     S.azimuth.clear();
@@ -43,6 +31,7 @@ void DRL::ContinueSearch(void)
     }
     ray_position++;
 }
+
 
 /**
  * Режим вывода отметок азимута
@@ -247,6 +236,62 @@ qreal DRL::CalcAlpha(qreal angle)const
             alpha+=2u*M_PI;
     }
     return alpha;
+}
+
+void DRL::GenerationRadians(void)
+{
+    radians=new Points[ROUND_DEGREE];
+    for(quint16 i=0u;i<ROUND_DEGREE;i++)
+    {
+        radians[i].degree=i;
+        radians[i].angle=GetRadianValue(i);
+        radians[i].x=qFastCos(radians[i].angle);
+        radians[i].y=qFastSin(radians[i].angle);
+    }
+}
+
+void DRL::GenerationRayPath(void)
+{
+    GenerationRayPath(ROUND_DEGREE);
+}
+
+void DRL::GenerationRayPath(quint16 angle)
+{
+    ray.clear();
+    Points*i=radians,*end=radians+angle;
+    //while(i<end)ray.append(clockwise ? end-- : i++);
+    while(i<end)ray.prepend(i++);
+    ray_position=ray.begin(); //Устанавливаем стартовую позицию луча
+}
+
+void DRL::DrawRay(void)const
+{
+    //QColor color=Color;
+    //color.setAlphaF(settings["system"]["brightness"].toDouble());
+    //qglColor(color);
+
+    qglColor(ray_color);
+    glPointSize(4.0f);
+    glLineWidth(0.3f);
+    if((*ray_position)->x>0)
+        glScalef(1.13f,1.0f,1.0f);
+    else
+        glScalef(.85f,.99f,1.0f);
+
+    glBegin(GL_LINES);
+        glVertex2d(static_cast<GLdouble>(.0f),static_cast<GLdouble>(.0f));
+        glVertex2d((*ray_position)->x,(*ray_position)->y);
+    glEnd();
+
+    qglColor(QColor(69u,121u,178u));
+    for(QVector<RoundLine>::const_iterator it=(*Current.range).begin(),end=(*Current.range).end();it<end;it++)
+    {
+        glBegin(GL_POINTS);
+        //glLineWidth(it->width/**focus*/);
+        Points *i=it->Coordinates+(*ray_position)->degree;
+        glVertex2f(i->x,i->y);
+        glEnd();
+    }
 }
 
 /**

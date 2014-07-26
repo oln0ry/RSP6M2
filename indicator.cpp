@@ -6,7 +6,7 @@ Indicator::Indicator(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
     qsrand(QTime(0u,0u,0u).secsTo(QTime::currentTime()));
     //ray_color=QColor(120u,183u,255u);
     ray_color=QColor(55u,80u,100u);
-    GenerationRadians();
+    /*
     Points p;
     for(Points*i=radians,*end=radians+ROUND_DEGREE;i<end;i+=3) //Получаем координаты для отрисовки фона индикатора
     {
@@ -15,8 +15,7 @@ Indicator::Indicator(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
         p.angle=i->angle;
         circle.append(p);
     }
-
-    GenerationRayPath();
+    */
 }
 
 Indicator::~Indicator()
@@ -147,60 +146,5 @@ void Indicator::ChangeFPS(qreal fps)
         if(IsActive())
             timer.stop();
         timer.start(fps,this);
-    }
-}
-
-void Indicator::GenerationRadians(void)
-{
-    radians=new Points[ROUND_DEGREE];
-    for(quint16 i=0u;i<ROUND_DEGREE;i++)
-    {
-        radians[i].degree=i;
-        radians[i].angle=GetRadianValue(i);
-        radians[i].x=qFastCos(radians[i].angle);
-        radians[i].y=qFastSin(radians[i].angle);
-    }
-}
-
-void Indicator::GenerationRayPath(void)
-{
-    GenerationRayPath(ROUND_DEGREE);
-}
-
-void Indicator::GenerationRayPath(quint16 angle)
-{
-    ray.clear();
-    Points*i=radians,*end=radians+angle;
-    //while(i<end)ray.append(clockwise ? end-- : i++);
-    while(i<end)ray.prepend(i++);
-    ray_position=ray.begin(); //Устанавливаем стартовую позицию луча
-}
-
-void Indicator::DrawRay(void)const
-{
-    //QColor color=Color;
-    //color.setAlphaF(settings["system"]["brightness"].toDouble());
-    //qglColor(color);
-
-    qglColor(ray_color);
-    glPointSize(4.0f);
-    glLineWidth(0.3f);
-    if((*ray_position)->x>0)
-        glScalef(1.13f,1.0f,1.0f);
-    else
-        glScalef(.85f,.99f,1.0f);
-
-    glBegin(GL_LINES);
-        glVertex2d(static_cast<GLdouble>(.0f),static_cast<GLdouble>(.0f));
-        glVertex2d((*ray_position)->x,(*ray_position)->y);
-    glEnd();
-
-    for(QVector<RoundLine>::const_iterator it=(*Current.range).begin(),end=(*Current.range).end();it<end;it++)
-    {
-        glBegin(GL_POINTS);
-        //glLineWidth(it->width/**focus*/);
-        Points *i=it->Coordinates+(*ray_position)->degree;
-        glVertex2f(i->x,i->y);
-        glEnd();
     }
 }

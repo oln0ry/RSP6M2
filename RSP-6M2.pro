@@ -18,15 +18,20 @@ SOURCES += main.cpp\
         menu.cpp \
     indicator.cpp \
     drl.cpp \
-    drlview.cpp
+    drlview.cpp \
+    prlview.cpp \
+    prl.cpp
 
 HEADERS  += menu.h \
     indicator.h \
     drl.h \
-    drlview.h
+    drlview.h \
+    prlview.h \
+    prl.h
 
 FORMS    += menu.ui \
-    drlview.ui
+    drlview.ui \
+    prlview.ui
 
 RESOURCES += \
     common.qrc

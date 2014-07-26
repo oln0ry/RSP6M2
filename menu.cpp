@@ -21,3 +21,9 @@ void Menu::on_OpenDRLInterface_clicked()
     drl_view=new DRLView;
     drl_view->show();
 }
+
+void Menu::on_OpenDRLInterface_2_clicked()
+{
+    prl_view=new PRLView;
+    prl_view->show();
+}

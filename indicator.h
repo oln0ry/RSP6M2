@@ -95,11 +95,9 @@ class Indicator : public QGLWidget
         virtual void GenerationAzimuth(void)=0;
         virtual void DrawAzimuth(void)const=0;
         virtual void ContinueSearch(void)=0;
-
-        void GenerationRadians(void);
-        void GenerationRayPath(void);
-        void GenerationRayPath(quint16 angle);
-        void DrawRay(void)const;
+        virtual void GenerationRayPath(void)=0;
+        virtual void DrawRay(void)const=0;
+        virtual void GenerationRadians(void)=0;
 
         QImage background,bg;
         GLuint terrain[1];

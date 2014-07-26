@@ -1,6 +1,6 @@
 #ifndef DRL_H
 #define DRL_H
-#include<indicator.h>
+#include"indicator.h"
 
 class DRL : public Indicator
 {
@@ -32,6 +32,10 @@ class DRL : public Indicator
         void DrawRange(void)const;
         void GenerationAzimuth(void);
         void DrawAzimuth(void)const;
+        void GenerationRayPath(void);
+        void GenerationRayPath(quint16 angle);
+        void DrawRay(void)const;
+        void GenerationRadians(void);
 
         Azimuth azimuth=Azimuth::A_NO;
         Range range=Range::R_NO;

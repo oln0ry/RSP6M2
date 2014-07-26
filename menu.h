@@ -5,6 +5,7 @@
 #include<QPointer>
 #include<QResizeEvent>
 #include"drlview.h"
+#include"prlview.h"
 
 namespace Ui
 {
@@ -25,9 +26,12 @@ class Menu : public QMainWindow
     private slots:
         void on_OpenDRLInterface_clicked();
 
-    private:
+        void on_OpenDRLInterface_2_clicked();
+
+private:
         Ui::Menu *ui;
         QPointer<DRLView>drl_view;
+        QPointer<PRLView>prl_view;
 };
 
 #endif // MENU_H
